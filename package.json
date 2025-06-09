@@ -1,0 +1,21 @@
+{
+  "name": "javascript-2-resit-1-hallotre",
+  "version": "1.0.0",
+  "description": "A modern, responsive web application for exploring and managing classic PC games from the golden era. Built with vanilla JavaScript, HTML, and styled with Tailwind CSS.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx @tailwindcss/cli -i ./input.css -o ./css/style.css --minify",
+    "build-css": "npx @tailwindcss/cli -i ./input.css -o ./css/style.css --watch",
+    "build-css-prod": "npx @tailwindcss/cli -i ./input.css -o ./css/style.css --minify",
+    "dev": "npm run build-css",
+    "server": "python3 -m http.server 3000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^4.1.8",
+    "@tailwindcss/cli": "^4.1.8"
+  }
+}

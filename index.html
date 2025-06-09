@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Games Platform</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="text-xl font-bold text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-gamepad mr-2"></i>Old Games
+                    </a>
+                </div>
+                
+                <!-- Centered Search Bar -->
+                <div class="flex-1 flex justify-center px-6">
+                    <div class="w-full max-w-lg">
+                        <div class="relative">
+                            <input type="text" id="searchInput" 
+                                   placeholder="Search games..." 
+                                   class="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md leading-5 bg-gray-700 text-gray-300 placeholder-gray-400 focus:outline-none focus:bg-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Navigation -->
+                <div class="flex items-center space-x-4">
+                    <!-- Genre Dropdown -->
+                    <div class="relative">
+                        <button id="genreDropdown" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            Genres <i class="fas fa-chevron-down ml-1"></i>
+                        </button>
+                        <div id="genreMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-50">
+                            <div class="py-1" id="genreList">
+                                <!-- Genres will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sort Controls -->
+                    <div class="flex items-center space-x-2">
+                        <label for="sortSelect" class="text-gray-300 text-sm font-medium">
+                            <i class="fas fa-sort mr-1"></i>Sort:
+                        </label>
+                        <select id="sortSelect" class="bg-gray-700 border border-gray-600 text-gray-300 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 px-3 py-2">
+                            <option value="name">Name</option>
+                            <option value="released">Release Date</option>
+                        </select>
+                    </div>
+
+                    <!-- Auth Buttons -->
+                    <div class="flex items-center space-x-4" id="authButtons">
+                        <a href="login.html" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                        <a href="register.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Register</a>
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="hidden items-center space-x-4" id="userMenu">
+                        <a href="profile.html" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-user mr-1"></i>Profile
+                        </a>
+                        <button id="logoutButton" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="flex justify-center items-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded mb-4">
+            <p id="errorText"></p>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-4">
+                <i class="fas fa-gamepad text-blue-400 mr-2"></i>
+                Classic Old Games Collection
+            </h1>
+            <p class="text-xl text-gray-300">Discover and explore vintage PC games from the golden era</p>
+        </div>
+
+        <!-- Games Grid -->
+        <div id="gamesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Games will be populated here -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-12">
+            <i class="fas fa-search text-gray-600 text-6xl mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-400 mb-2">No games found</h3>
+            <p class="text-gray-500">Try adjusting your search or filter criteria</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-gray-400">© 2025 Old Games Platform. Built with JavaScript and Tailwind CSS.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html> 

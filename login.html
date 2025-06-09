@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Old Games Platform</title>
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-xl font-bold text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-gamepad mr-2"></i>Old Games
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="register.html" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="text-center">
+                    <i class="fas fa-sign-in-alt text-blue-400 text-6xl mb-4"></i>
+                    <h2 class="text-3xl font-extrabold text-white">Sign in to your account</h2>
+                    <p class="mt-2 text-sm text-gray-400">
+                        Or
+                        <a href="register.html" class="font-medium text-blue-400 hover:text-blue-300">
+                            create a new account
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="mt-8 space-y-6">
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden bg-red-900 border border-red-700 text-red-100 px-4 py-3 rounded">
+                    <p id="errorText"></p>
+                </div>
+
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden bg-green-900 border border-green-700 text-green-100 px-4 py-3 rounded">
+                    <p id="successText"></p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-300">
+                            Email address
+                        </label>
+                        <div class="mt-1 relative">
+                            <input id="email" name="email" type="email" autocomplete="email" required
+                                   class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-600 placeholder-gray-400 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                   placeholder="your.email@stud.noroff.no">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-300">
+                            Password
+                        </label>
+                        <div class="mt-1 relative">
+                            <input id="password" name="password" type="password" autocomplete="current-password" required
+                                   class="appearance-none relative block w-full px-3 py-2 pl-10 pr-10 border border-gray-600 placeholder-gray-400 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                   placeholder="Password">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-20">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center z-20">
+                                <i class="fas fa-eye text-gray-400 hover:text-gray-300"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" id="loginButton"
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-sign-in-alt text-blue-500 group-hover:text-blue-400"></i>
+                        </span>
+                        <span id="loginButtonText">Sign in</span>
+                        <span id="loginSpinner" class="hidden ml-2">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <a href="index.html" class="text-sm text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-arrow-left mr-1"></i>
+                        Back to Games
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-gray-400">© 2025 Old Games Platform. Built with JavaScript and Tailwind CSS.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html> 
