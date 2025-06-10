@@ -163,15 +163,18 @@ function createGameCard(game) {
     const isFavorited = storage.isFavorite(game.id);
     
     const card = document.createElement('div');
-    card.className = 'bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 cursor-pointer group';
+    card.className = 'win98-game-card';
     
     card.innerHTML = `
-        <div class="relative">
+        <div class="win98-game-image">
             <img src="${game.image.url}" alt="${game.image.alt}" 
-                 class="w-full h-48 object-cover group-hover:brightness-110 transition-all duration-300"
-                 onerror="this.src='https://via.placeholder.com/400x300?text=Game+Image'">
-            <div class="absolute top-2 right-2">
-                <button class="favorite-btn p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75 transition-all duration-200 ${isFavorited ? 'text-red-500' : 'text-gray-300'}" 
+                 style="max-width: 100%; max-height: 100%; object-fit: cover;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="display: none; align-items: center; justify-content: center; width: 100%; height: 100%; background: var(--win98-field-bg); color: var(--win98-disabled-text); font-size: 10px;">
+                <i class="fas fa-image" style="margin-right: 4px;"></i>No Image
+            </div>
+            <div style="position: absolute; top: 4px; right: 4px;">
+                <button class="favorite-btn win98-button" style="min-height: 20px; padding: 2px 4px; font-size: 10px; ${isFavorited ? 'color: red;' : ''}" 
                         data-game-id="${game.id}" 
                         title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
                     <i class="fas fa-heart"></i>
@@ -179,37 +182,37 @@ function createGameCard(game) {
             </div>
         </div>
         
-        <div class="p-4">
-            <h3 class="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-200">
+        <div class="win98-game-info">
+            <div class="win98-game-title">
                 ${game.name}
-            </h3>
+            </div>
             
-            <p class="text-gray-400 mb-3">
-                <i class="fas fa-calendar mr-1"></i>
+            <div class="win98-game-genre">
+                <i class="fas fa-calendar" style="margin-right: 2px;"></i>
                 Released: ${game.released}
-            </p>
+            </div>
             
-            <div class="flex flex-wrap gap-1 mb-3">
+            <div style="display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 4px;">
                 ${game.genre.map(genre => `
-                    <span class="px-2 py-1 ${genre === currentGenre ? 'bg-yellow-600' : 'bg-blue-600'} text-white text-xs rounded-full cursor-pointer hover:${genre === currentGenre ? 'bg-yellow-700' : 'bg-blue-700'} transition-colors duration-200" 
+                    <span style="padding: 1px 4px; background: ${genre === currentGenre ? 'var(--win98-selected-bg)' : 'var(--win98-selected-bg)'}; color: var(--win98-selected-text); font-size: 9px; cursor: pointer; border: 1px outset var(--win98-bg); ${genre === currentGenre ? 'font-weight: bold;' : ''}" 
                           onclick="navigateToGenre('${genre}')">
                         ${genre}
                     </span>
                 `).join('')}
             </div>
             
-            <p class="text-gray-300 text-sm line-clamp-3 mb-4">
+            <div style="font-size: 10px; color: var(--win98-text); margin-bottom: 8px; line-height: 1.3;">
                 ${truncateText(game.description, 120)}
-            </p>
+            </div>
             
-            <div class="flex justify-between items-center">
-                <button class="view-details-btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors duration-200" 
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button class="view-details-btn win98-button" style="font-size: 10px;" 
                         data-game-id="${game.id}">
-                    <i class="fas fa-eye mr-1"></i>
+                    <i class="fas fa-eye" style="margin-right: 2px;"></i>
                     View Details
                 </button>
                 
-                <span class="text-gray-500 text-xs">
+                <span style="color: var(--win98-disabled-text); font-size: 9px;">
                     ID: ${game.id}
                 </span>
             </div>
@@ -302,13 +305,11 @@ function toggleFavorite(button) {
     
     if (isFavorited) {
         storage.removeFromFavorites(gameId);
-        button.classList.remove('text-red-500');
-        button.classList.add('text-gray-300');
+        button.style.color = '';
         button.setAttribute('title', 'Add to favorites');
     } else {
         storage.addToFavorites(gameId);
-        button.classList.remove('text-gray-300');
-        button.classList.add('text-red-500');
+        button.style.color = 'red';
         button.setAttribute('title', 'Remove from favorites');
     }
 }
@@ -327,7 +328,10 @@ function setupOtherGenres() {
     
     otherGenres.forEach(genre => {
         const genreButton = document.createElement('button');
-        genreButton.className = 'px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white text-sm rounded-md transition-colors duration-200';
+        genreButton.className = 'win98-button';
+        genreButton.style.fontSize = '10px';
+        genreButton.style.marginRight = '4px';
+        genreButton.style.marginBottom = '4px';
         genreButton.textContent = genre;
         genreButton.addEventListener('click', () => {
             navigateToGenre(genre);
@@ -337,8 +341,11 @@ function setupOtherGenres() {
     
     // Add "All Genres" button
     const allGenresButton = document.createElement('button');
-    allGenresButton.className = 'px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors duration-200';
-    allGenresButton.innerHTML = '<i class="fas fa-th-large mr-1"></i>All Games';
+    allGenresButton.className = 'win98-button';
+    allGenresButton.style.fontSize = '10px';
+    allGenresButton.style.marginRight = '4px';
+    allGenresButton.style.marginBottom = '4px';
+    allGenresButton.innerHTML = '<i class="fas fa-th-large" style="margin-right: 4px;"></i>All Games';
     allGenresButton.addEventListener('click', () => {
         window.location.href = 'index.html';
     });

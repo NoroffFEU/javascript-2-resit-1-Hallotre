@@ -51,11 +51,30 @@ function displayUserProfile(user) {
     // Update avatar
     const userAvatar = document.getElementById('userAvatar');
     if (userAvatar) {
-        userAvatar.src = user.avatar?.url || 'https://via.placeholder.com/128x128?text=User';
-        userAvatar.alt = user.avatar?.alt || `${user.name} avatar`;
-        userAvatar.onerror = function() {
-            this.src = 'https://via.placeholder.com/128x128?text=User';
-        };
+        if (user.avatar?.url) {
+            userAvatar.src = user.avatar.url;
+            userAvatar.alt = user.avatar.alt || `${user.name} avatar`;
+            userAvatar.style.display = 'block';
+            userAvatar.onerror = function() {
+                this.style.display = 'none';
+                const placeholder = this.nextElementSibling;
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                }
+            };
+            // Hide placeholder
+            const placeholder = userAvatar.nextElementSibling;
+            if (placeholder) {
+                placeholder.style.display = 'none';
+            }
+        } else {
+            // No avatar URL, show placeholder
+            userAvatar.style.display = 'none';
+            const placeholder = userAvatar.nextElementSibling;
+            if (placeholder) {
+                placeholder.style.display = 'flex';
+            }
+        }
     }
     
     // Update user name
@@ -117,12 +136,12 @@ function toggleEditMode() {
             // Switch to view mode
             editMode.classList.add('hidden');
             viewMode.classList.remove('hidden');
-            editButton.innerHTML = '<i class="fas fa-edit mr-1"></i>Edit Profile';
+            editButton.innerHTML = '<i class="fas fa-edit"></i><span>Edit Profile</span>';
         } else {
             // Switch to edit mode and populate fields
             viewMode.classList.add('hidden');
             editMode.classList.remove('hidden');
-            editButton.innerHTML = '<i class="fas fa-eye mr-1"></i>View Profile';
+            editButton.innerHTML = '<i class="fas fa-eye"></i><span>View Profile</span>';
             
             // Populate edit fields with current data
             if (currentUser) {
@@ -165,7 +184,7 @@ async function handleProfileUpdate(event) {
         const saveButton = document.getElementById('saveProfileButton');
         if (saveButton) {
             saveButton.disabled = true;
-            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Saving...</span>';
         }
         
         // Here you would normally make an API call to update the profile
@@ -192,7 +211,7 @@ async function handleProfileUpdate(event) {
         const saveButton = document.getElementById('saveProfileButton');
         if (saveButton) {
             saveButton.disabled = false;
-            saveButton.innerHTML = '<i class="fas fa-save mr-1"></i>Save Changes';
+            saveButton.innerHTML = '<i class="fas fa-save"></i><span>Save Changes</span>';
         }
     }
 }
@@ -319,46 +338,68 @@ function displayFavoriteGames() {
  */
 function createGameCard(game) {
     const card = document.createElement('div');
-    card.className = 'bg-gray-700 rounded-lg shadow-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300';
+    card.className = 'win98-game-card';
     
     const imageUrl = game.image?.url || 'https://via.placeholder.com/300x200?text=Game';
     const imageAlt = game.image?.alt || game.name;
     
     card.innerHTML = `
-        <div class="relative">
+        <div class="win98-game-image">
             <img src="${imageUrl}" alt="${imageAlt}" 
-                 class="w-full h-48 object-cover"
-                 onerror="this.src='https://via.placeholder.com/300x200?text=Game'">
-            
-            <!-- Favorite button overlay -->
-            <button class="absolute top-2 right-2 w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors duration-200"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="win98-image-placeholder">
+                <i class="fas fa-image"></i>
+                <span>No Image</span>
+            </div>
+            <button class="win98-favorite-btn favorited" 
                     onclick="removeFavorite(${game.id})"
                     title="Remove from favorites">
-                <i class="fas fa-heart text-sm"></i>
+                <i class="fas fa-heart"></i>
             </button>
         </div>
-        <div class="p-4">
-            <h3 class="text-lg font-semibold text-white mb-2 line-clamp-1">${game.name}</h3>
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-gray-400 text-sm">
-                    <i class="fas fa-calendar mr-1"></i>
-                    ${game.released}
-                </span>
-                <div class="flex flex-wrap gap-1">
-                    ${game.genre.slice(0, 2).map(genre => 
-                        `<span class="px-2 py-1 bg-blue-600 text-white text-xs rounded">${genre}</span>`
-                    ).join('')}
-                </div>
+        
+        <div class="win98-game-info">
+            <div class="win98-game-title">${game.name}</div>
+            
+            <div class="win98-game-meta">
+                <i class="fas fa-calendar"></i>
+                <span>Released: ${game.released}</span>
             </div>
-            <p class="text-gray-300 text-sm mb-4 line-clamp-3">${game.description}</p>
-            <a href="game-details.html?id=${game.id}" 
-               class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded transition-colors duration-200">
-                View Details
-            </a>
+            
+            <div class="win98-game-genres">
+                ${game.genre.slice(0, 2).map(genre => `
+                    <span class="win98-genre-tag">
+                        ${genre}
+                    </span>
+                `).join('')}
+                ${game.genre.length > 2 ? `<span class="win98-game-id">+${game.genre.length - 2}</span>` : ''}
+            </div>
+            
+            <div class="win98-game-description">
+                ${truncateText(game.description, 80)}
+            </div>
+            
+            <div class="win98-game-actions">
+                <a href="game-details.html?id=${game.id}" class="win98-view-details-btn">
+                    <i class="fas fa-eye"></i>
+                    <span>View Details</span>
+                </a>
+            </div>
         </div>
     `;
     
     return card;
+}
+
+/**
+ * Truncates text to specified length
+ * @param {string} text - Text to truncate
+ * @param {number} maxLength - Maximum length
+ * @returns {string} Truncated text
+ */
+function truncateText(text, maxLength) {
+    if (!text || text.length <= maxLength) return text || '';
+    return text.substring(0, maxLength).trim() + '...';
 }
 
 /**
@@ -437,9 +478,12 @@ function displayFilteredFavorites(games) {
     
     if (games.length === 0) {
         container.innerHTML = `
-            <div class="col-span-full text-center py-8">
-                <i class="fas fa-search text-gray-600 text-4xl mb-3"></i>
-                <p class="text-gray-400">No favorites match your search</p>
+            <div class="win98-no-favorites">
+                <div class="win98-no-favorites-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>No favorites match your search</h3>
+                <p>Try adjusting your search terms</p>
             </div>
         `;
         return;

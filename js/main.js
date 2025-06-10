@@ -38,10 +38,14 @@ async function loadGames() {
             
             // Setup genre dropdown
             setupGenreDropdown();
+            
+            // Update status bar
+            updateStatusBar('Games loaded successfully');
         }
     } catch (error) {
         console.error('Error loading games:', error);
         errorHandler.showError('Failed to load games. Please try again later.');
+        updateStatusBar('Error loading games');
     } finally {
         ui.hideLoading();
     }
@@ -71,55 +75,50 @@ function createGameCard(game) {
     const isFavorited = storage.isFavorite(game.id);
     
     const card = document.createElement('div');
-    card.className = 'bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 cursor-pointer group';
+    card.className = 'win98-game-card';
     
     card.innerHTML = `
-        <div class="relative">
+        <div class="win98-game-image">
             <img src="${game.image.url}" alt="${game.image.alt}" 
-                 class="w-full h-48 object-cover group-hover:brightness-110 transition-all duration-300"
-                 onerror="this.src='https://via.placeholder.com/400x300?text=Game+Image'">
-            <div class="absolute top-2 right-2">
-                <button class="favorite-btn p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75 transition-all duration-200 ${isFavorited ? 'text-red-500' : 'text-gray-300'}" 
-                        data-game-id="${game.id}" 
-                        title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
-                    <i class="fas fa-heart"></i>
-                </button>
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="win98-image-placeholder">
+                <i class="fas fa-image"></i>
+                <span>No Image</span>
             </div>
+            <button class="win98-favorite-btn favorite-btn ${isFavorited ? 'favorited' : ''}" 
+                    data-game-id="${game.id}" 
+                    title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
+                <i class="fas fa-heart"></i>
+            </button>
         </div>
         
-        <div class="p-4">
-            <h3 class="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                ${game.name}
-            </h3>
+        <div class="win98-game-info">
+            <div class="win98-game-title">${game.name}</div>
             
-            <p class="text-gray-400 mb-3">
-                <i class="fas fa-calendar mr-1"></i>
-                Released: ${game.released}
-            </p>
+            <div class="win98-game-meta">
+                <i class="fas fa-calendar"></i>
+                <span>Released: ${game.released}</span>
+            </div>
             
-            <div class="flex flex-wrap gap-1 mb-3">
+            <div class="win98-game-genres">
                 ${game.genre.map(genre => `
-                    <span class="px-2 py-1 bg-blue-600 text-white text-xs rounded-full cursor-pointer hover:bg-blue-700 transition-colors duration-200" 
-                          onclick="filterByGenre('${genre}')">
+                    <span class="win98-genre-tag" onclick="filterByGenre('${genre}')">
                         ${genre}
                     </span>
                 `).join('')}
             </div>
             
-            <p class="text-gray-300 text-sm line-clamp-3 mb-4">
+            <div class="win98-game-description">
                 ${truncateText(game.description, 120)}
-            </p>
+            </div>
             
-            <div class="flex justify-between items-center">
-                <button class="view-details-btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors duration-200" 
-                        data-game-id="${game.id}">
-                    <i class="fas fa-eye mr-1"></i>
-                    View Details
+            <div class="win98-game-actions">
+                <button class="win98-view-details-btn view-details-btn" data-game-id="${game.id}">
+                    <i class="fas fa-eye"></i>
+                    <span>View Details</span>
                 </button>
                 
-                <span class="text-gray-500 text-xs">
-                    ID: ${game.id}
-                </span>
+                <span class="win98-game-id">ID: ${game.id}</span>
             </div>
         </div>
     `;
@@ -152,6 +151,7 @@ function displayGames() {
     if (filteredGames.length === 0) {
         container.classList.add('hidden');
         noResults.classList.remove('hidden');
+        updateStatusBar('No games found');
         return;
     }
     
@@ -165,6 +165,26 @@ function displayGames() {
     
     // Add event listeners for game cards
     setupGameCardListeners();
+    
+    // Update status bar
+    updateStatusBar(`Showing ${filteredGames.length} game${filteredGames.length !== 1 ? 's' : ''}`);
+}
+
+/**
+ * Updates the Windows 98 style status bar
+ * @param {string} message - Status message
+ */
+function updateStatusBar(message) {
+    const statusText = document.getElementById('statusText');
+    const gameCount = document.getElementById('gameCount');
+    
+    if (statusText) {
+        statusText.textContent = message;
+    }
+    
+    if (gameCount && allGames.length > 0) {
+        gameCount.textContent = `Total: ${allGames.length} games`;
+    }
 }
 
 /**
@@ -207,13 +227,11 @@ function toggleFavorite(button) {
     
     if (isFavorited) {
         storage.removeFromFavorites(gameId);
-        button.classList.remove('text-red-500');
-        button.classList.add('text-gray-300');
+        button.style.color = '';
         button.setAttribute('title', 'Add to favorites');
     } else {
         storage.addToFavorites(gameId);
-        button.classList.remove('text-gray-300');
-        button.classList.add('text-red-500');
+        button.style.color = 'red';
         button.setAttribute('title', 'Remove from favorites');
     }
 }
@@ -266,9 +284,8 @@ function setupGenreDropdown() {
     genreList.innerHTML = '';
     
     // Add "All Genres" option
-    const allGenresItem = document.createElement('a');
-    allGenresItem.href = '#';
-    allGenresItem.className = 'block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white';
+    const allGenresItem = document.createElement('button');
+    allGenresItem.className = 'win98-dropdown-item';
     allGenresItem.textContent = 'All Genres';
     allGenresItem.addEventListener('click', (e) => {
         e.preventDefault();
@@ -278,14 +295,14 @@ function setupGenreDropdown() {
     
     // Add separator
     const separator = document.createElement('div');
-    separator.className = 'border-t border-gray-700 my-1';
+    separator.style.borderTop = '1px solid var(--win98-button-shadow)';
+    separator.style.margin = '2px 0';
     genreList.appendChild(separator);
     
     // Add genre options
     currentGenres.forEach(genre => {
-        const genreItem = document.createElement('a');
-        genreItem.href = '#';
-        genreItem.className = 'block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white';
+        const genreItem = document.createElement('button');
+        genreItem.className = 'win98-dropdown-item';
         genreItem.textContent = genre;
         genreItem.addEventListener('click', (e) => {
             e.preventDefault();

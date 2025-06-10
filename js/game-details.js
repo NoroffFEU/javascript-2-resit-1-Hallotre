@@ -70,7 +70,11 @@ function displayGameDetails() {
         gameImage.src = currentGame.image.url;
         gameImage.alt = currentGame.image.alt;
         gameImage.onerror = function() {
-            this.src = 'https://via.placeholder.com/400x300?text=Game+Image';
+            this.style.display = 'none';
+            const placeholder = this.nextElementSibling;
+            if (placeholder) {
+                placeholder.style.display = 'flex';
+            }
         };
     }
     
@@ -80,21 +84,23 @@ function displayGameDetails() {
         gameTitle.textContent = currentGame.name;
     }
     
+    // Update game ID
+    const gameId = document.getElementById('gameId');
+    if (gameId) {
+        gameId.textContent = currentGame.id;
+    }
+    
     // Update release date
     const gameReleased = document.getElementById('gameReleased');
     if (gameReleased) {
-        gameReleased.innerHTML = `
-            <i class="fas fa-calendar mr-2"></i>
-            Released: ${currentGame.released}
-        `;
+        gameReleased.textContent = `Released: ${currentGame.released}`;
     }
     
     // Update genres
     const gameGenres = document.getElementById('gameGenres');
     if (gameGenres && currentGame.genre) {
         gameGenres.innerHTML = currentGame.genre.map(genre => `
-            <span class="px-3 py-1 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors duration-200 cursor-pointer" 
-                  onclick="navigateToGenre('${genre}')">
+            <span class="win98-genre-tag" onclick="navigateToGenre('${genre}')">
                 ${genre}
             </span>
         `).join('');
@@ -116,20 +122,19 @@ function displayGameDetails() {
 function updateFavoriteButton() {
     const favoriteButton = document.getElementById('favoriteButton');
     const favoriteIcon = document.getElementById('favoriteIcon');
-    const favoriteText = document.getElementById('favoriteText');
     
-    if (!favoriteButton || !favoriteIcon || !favoriteText || !currentGame) return;
+    if (!favoriteButton || !favoriteIcon || !currentGame) return;
     
     const isFavorited = storage.isFavorite(currentGame.id);
     
     if (isFavorited) {
-        favoriteButton.className = 'flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white';
-        favoriteIcon.className = 'fas fa-heart-broken';
-        favoriteText.textContent = 'Remove from Favorites';
-    } else {
-        favoriteButton.className = 'flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 bg-gray-600 hover:bg-gray-700 text-white';
+        favoriteButton.className = 'win98-favorite-btn-large favorited';
         favoriteIcon.className = 'fas fa-heart';
-        favoriteText.textContent = 'Add to Favorites';
+        favoriteButton.title = 'Remove from Favorites';
+    } else {
+        favoriteButton.className = 'win98-favorite-btn-large';
+        favoriteIcon.className = 'fas fa-heart';
+        favoriteButton.title = 'Add to Favorites';
     }
 }
 
@@ -209,45 +214,46 @@ function createRelatedGameCard(game) {
     const isFavorited = storage.isFavorite(game.id);
     
     const card = document.createElement('div');
-    card.className = 'bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 cursor-pointer group';
+    card.className = 'win98-game-card';
     
     card.innerHTML = `
-        <div class="relative">
+        <div class="win98-game-image">
             <img src="${game.image.url}" alt="${game.image.alt}" 
-                 class="w-full h-32 object-cover group-hover:brightness-110 transition-all duration-300"
-                 onerror="this.src='https://via.placeholder.com/300x200?text=Game+Image'">
-            <div class="absolute top-2 right-2">
-                <button class="related-favorite-btn p-1 rounded-full bg-black bg-opacity-50 hover:bg-opacity-75 transition-all duration-200 ${isFavorited ? 'text-red-500' : 'text-gray-300'}" 
-                        data-game-id="${game.id}" 
-                        title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
-                    <i class="fas fa-heart text-sm"></i>
-                </button>
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="win98-image-placeholder">
+                <i class="fas fa-image"></i>
+                <span>No Image</span>
             </div>
+            <button class="win98-favorite-btn related-favorite-btn ${isFavorited ? 'favorited' : ''}" 
+                    data-game-id="${game.id}" 
+                    title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}">
+                <i class="fas fa-heart"></i>
+            </button>
         </div>
         
-        <div class="p-3">
-            <h4 class="text-sm font-semibold text-white mb-1 group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
-                ${game.name}
-            </h4>
+        <div class="win98-game-info">
+            <div class="win98-game-title">${game.name}</div>
             
-            <p class="text-gray-400 text-xs mb-2">
-                <i class="fas fa-calendar mr-1"></i>
-                ${game.released}
-            </p>
+            <div class="win98-game-meta">
+                <i class="fas fa-calendar"></i>
+                <span>Released: ${game.released}</span>
+            </div>
             
-            <div class="flex flex-wrap gap-1 mb-2">
+            <div class="win98-game-genres">
                 ${game.genre.slice(0, 2).map(genre => `
-                    <span class="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                    <span class="win98-genre-tag" onclick="navigateToGenre('${genre}')">
                         ${genre}
                     </span>
                 `).join('')}
-                ${game.genre.length > 2 ? `<span class="text-gray-400 text-xs">+${game.genre.length - 2}</span>` : ''}
+                ${game.genre.length > 2 ? `<span class="win98-game-id">+${game.genre.length - 2}</span>` : ''}
             </div>
             
-            <button class="related-view-btn w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors duration-200" 
-                    data-game-id="${game.id}">
-                View Details
-            </button>
+            <div class="win98-game-actions">
+                <button class="win98-view-details-btn related-view-btn" data-game-id="${game.id}">
+                    <i class="fas fa-eye"></i>
+                    <span>View Details</span>
+                </button>
+            </div>
         </div>
     `;
     
@@ -283,7 +289,7 @@ function navigateToGenre(genre) {
  */
 function setupRelatedGameListeners() {
     // Related game card clicks
-    document.querySelectorAll('#relatedGames .group').forEach(card => {
+    document.querySelectorAll('#relatedGames .win98-game-card').forEach(card => {
         card.addEventListener('click', (e) => {
             // Don't navigate if clicking on favorite button
             if (e.target.closest('.related-favorite-btn')) return;
@@ -321,13 +327,11 @@ function toggleRelatedFavorite(button) {
     
     if (isFavorited) {
         storage.removeFromFavorites(gameId);
-        button.classList.remove('text-red-500');
-        button.classList.add('text-gray-300');
+        button.style.color = '';
         button.setAttribute('title', 'Add to favorites');
     } else {
         storage.addToFavorites(gameId);
-        button.classList.remove('text-gray-300');
-        button.classList.add('text-red-500');
+        button.style.color = 'red';
         button.setAttribute('title', 'Remove from favorites');
     }
 }

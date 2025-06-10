@@ -77,3 +77,4 @@ temp/
 
 # Cache files
 *.cache 
+.vercel
